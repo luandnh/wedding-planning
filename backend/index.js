@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const corsOptions = require("./config/corsConfig");
 require("dotenv").config();
 
 // --- Initialize App ---
@@ -7,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // --- Middleware ---
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // --- Enhanced Request Logging Middleware ---
