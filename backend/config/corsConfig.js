@@ -15,4 +15,6 @@ const corsOptions = {
   credentials: true,
 };
 
+console.log("CORS options configured:", corsOptions);
+
 module.exports = corsOptions;
