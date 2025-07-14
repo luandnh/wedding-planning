@@ -2,8 +2,9 @@
 // src/pages/config.astro
 import AppLayout from '../layouts/AppLayout.astro';
 import ConfigManager from '../components/ConfigManager.svelte';
+const token = Astro.cookies.get('token')?.value;
 ---
 
 <AppLayout title="Cấu Hình Cưới">
-    <ConfigManager client:load />
+    <ConfigManager client:load token={token}/>
 </AppLayout>

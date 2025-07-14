@@ -10,7 +10,6 @@ let dashboardData = null;
 
 try {
     const workspaces = await (await fetch(`${backendUrl}/api/workspaces`, { headers: { Authorization: `Bearer ${token}` }})).json();
-    console.log(workspaces);
     if (workspaces.length > 0) {
         const currentWorkspaceId = workspaces[0].id;
         dashboardData = await (await fetch(`${backendUrl}/api/workspaces/${currentWorkspaceId}/dashboard`, { headers: { Authorization: `Bearer ${token}` }})).json();

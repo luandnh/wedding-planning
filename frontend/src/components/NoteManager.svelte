@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-
+  export let token;
     let notes = [];
     let isLoading = true;
     let error = null;
@@ -13,7 +13,7 @@
     const backendUrl = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:3001';
     
     async function apiCall(endpoint, method = 'GET', body = null) {
-        const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` };
+        const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
         const options = { method, headers, body: body ? JSON.stringify(body) : null };
         const response = await fetch(`${backendUrl}${endpoint}`, options);
         if (!response.ok) {
@@ -53,7 +53,7 @@
         try {
             const response = await fetch(`${backendUrl}/api/workspaces/${currentWorkspaceId}/upload`, {
                 method: 'POST',
-                headers: { Authorization: `Bearer ${getToken()}` },
+                headers: { Authorization: `Bearer ${token}` },
                 body: formData,
             });
             if (!response.ok) throw new Error('Upload failed');

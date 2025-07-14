@@ -1,14 +1,15 @@
 ---
 // src/pages/budget.astro
-import AppLayout from '../layouts/AppLayout.astro';
-import BudgetManager from '../components/BudgetManager.svelte';
+import AppLayout from "../layouts/AppLayout.astro";
+import BudgetManager from "../components/BudgetManager.svelte";
+const token = Astro.cookies.get("token")?.value;
 ---
 
 <AppLayout title="Danh Sách Ngân Sách">
-    <!-- 
+  <!-- 
       Đây là "Hòn đảo" Svelte. 
       Astro sẽ chỉ tải JavaScript cho component này,
       giúp trang web của bạn nhanh hơn.
     -->
-    <BudgetManager client:load />
+  <BudgetManager client:load token={token} />
 </AppLayout>

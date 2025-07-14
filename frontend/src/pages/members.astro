@@ -1,9 +1,14 @@
 ---
 // src/pages/members.astro
-import AppLayout from '../layouts/AppLayout.astro';
-import MemberManager from '../components/MemberManager.svelte';
+import AppLayout from "../layouts/AppLayout.astro";
+import MemberManager from "../components/MemberManager.svelte";
+const token = Astro.cookies.get("token")?.value;
 ---
 
 <AppLayout title="Quản Lý Thành Viên">
-    <MemberManager client:load />
+  <!-- 
+      Đây là "Hòn đảo" Svelte cho việc quản lý công việc.
+      Astro sẽ chỉ tải JavaScript cần thiết cho component này.
+    -->
+  <MemberManager client:load token={token} />
 </AppLayout>

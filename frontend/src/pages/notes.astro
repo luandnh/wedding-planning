@@ -2,8 +2,9 @@
 // src/pages/notes.astro
 import AppLayout from '../layouts/AppLayout.astro';
 import NoteManager from '../components/NoteManager.svelte';
+const token = Astro.cookies.get('token')?.value;
 ---
 
 <AppLayout title="Ghi Chú">
-    <NoteManager client:load />
+    <NoteManager client:load token={token}/>
 </AppLayout>

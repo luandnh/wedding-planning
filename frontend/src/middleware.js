@@ -6,11 +6,22 @@ const JWT_SECRET = import.meta.env.JWT_SECRET || 'default-secret-key';
 
 // Middleware này sẽ chạy trước mỗi yêu cầu đến server
 export const onRequest = defineMiddleware(async (context, next) => {
-    const token = context.cookies.get('token')?.value;
+    // --- SỬA LỖI: Bỏ qua tất cả các API routes ---
+    // Middleware chỉ nên bảo vệ các trang (pages), không phải các điểm cuối API.
+    if (context.url.pathname.startsWith('/api/')) {
+        return next(); // Cho phép request đi thẳng đến file API
+    }
 
-    console.log(token)
-    // Nếu không có token -> chuyển về trang login
-    if (!token && context.url.pathname !== '/login') {
+    const token = context.cookies.get('token')?.value;
+    const isProtectedRoute = context.url.pathname.startsWith('/dashboard') ||
+                             context.url.pathname.startsWith('/budget') ||
+                             context.url.pathname.startsWith('/tasks') ||
+                             context.url.pathname.startsWith('/guests') ||
+                             context.url.pathname.startsWith('/notes') ||
+                             context.url.pathname.startsWith('/config');
+
+    // Nếu không có token và truy cập trang cần bảo vệ -> chuyển về trang login
+    if (isProtectedRoute && !token) {
         return context.redirect('/login');
     }
 

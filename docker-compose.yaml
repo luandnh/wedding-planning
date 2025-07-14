@@ -1,0 +1,37 @@
+version: "3.8"
+
+name: wedding-planning
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "15301:3001"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/wedding
+      JWT_SECRET: your_super_secret_jwt_key_here
+    volumes:
+      # - ./backend:/app # Uncomment if you want to mount the backend source code for development
+      - /app/node_modules
+    networks:
+      - proxy
+
+  frontend:
+    build: ./frontend # Path to your frontend Dockerfile
+    ports:
+      - "15302:4321" # Host_port:Container_port (Astro's default preview/start port)
+    environment:
+      PUBLIC_API_BASE_URL: http://backend:3001
+      API_URL: http://backend:3001
+      NODE_ENV: production
+    volumes:
+      # - ./frontend:/app # Uncomment if you want to mount the frontend source code for development
+      - /app/node_modules # Exclude node_modules for frontend
+    depends_on:
+      - backend
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

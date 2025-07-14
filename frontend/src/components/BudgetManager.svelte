@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
 
+    export let token;
     // --- State Management ---
     let budgetGroups = [];
     let isLoading = true;
@@ -22,11 +23,10 @@
 
     // --- Helper & API Functions ---
     const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
-    const getToken = () => localStorage.getItem('authToken');
     const backendUrl = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:3001';
 
     async function apiCall(endpoint, method = 'GET', body = null) {
-        const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` };
+        const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
         const options = { method, headers, body: body ? JSON.stringify(body) : null };
         const response = await fetch(`${backendUrl}${endpoint}`, options);
         if (!response.ok) {
