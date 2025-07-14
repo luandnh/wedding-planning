@@ -1,0 +1,7 @@
+---
+// src/pages/logout.astro
+// Xóa cookie token
+Astro.cookies.delete('token', { path: '/' });
+// Chuyển hướng về trang đăng nhập
+return Astro.redirect('/login');
+---

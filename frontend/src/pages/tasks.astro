@@ -1,0 +1,13 @@
+---
+// src/pages/tasks.astro
+import AppLayout from '../layouts/AppLayout.astro';
+import TaskManager from '../components/TaskManager.svelte';
+---
+
+<AppLayout title="Danh Sách Công Việc">
+    <!-- 
+      Đây là "Hòn đảo" Svelte cho việc quản lý công việc.
+      Astro sẽ chỉ tải JavaScript cần thiết cho component này.
+    -->
+    <TaskManager client:load />
+</AppLayout>

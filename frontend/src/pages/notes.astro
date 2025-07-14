@@ -1,0 +1,9 @@
+---
+// src/pages/notes.astro
+import AppLayout from '../layouts/AppLayout.astro';
+import NoteManager from '../components/NoteManager.svelte';
+---
+
+<AppLayout title="Ghi Chú">
+    <NoteManager client:load />
+</AppLayout>

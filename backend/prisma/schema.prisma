@@ -1,0 +1,215 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Bảng lưu thông tin người dùng
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  name         String?
+  avatarUrl    String?   @map("avatar_url")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Quan hệ: Một User có thể sở hữu nhiều Workspace
+  ownedWorkspaces Workspace[]     @relation("Owner")
+  // Quan hệ: Một User có thể là thành viên của nhiều Workspace
+  workspaces      WorkspaceUser[]
+
+  @@map("users")
+}
+
+// Bảng lưu thông tin các không gian làm việc (mỗi đám cưới là một workspace)
+model Workspace {
+  id      String @id @default(cuid())
+  name    String
+  ownerId String @map("owner_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Quan hệ: Workspace thuộc về một User (Owner)
+  owner User @relation("Owner", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  // Quan hệ: Một Workspace có nhiều thành viên
+  members       WorkspaceUser[]
+  // Quan hệ: Một Workspace có một cấu hình đám cưới
+  weddingConfig WeddingConfig?
+  // Quan hệ: Một Workspace có nhiều công việc
+  tasks         Task[]
+  // Quan hệ: Một Workspace có nhiều hạng mục ngân sách
+  budgets       Budget[]
+  // Quan hệ: Một Workspace có nhiều khách mời
+  guests        Guest[]
+  // Quan hệ: Một Workspace có nhiều ghi chú
+  notes         Note[]
+  // Quan hệ: Một Workspace có nhiều media
+  media         Media[]
+
+  @@map("workspaces")
+}
+
+// Bảng trung gian quản lý thành viên trong Workspace (quan hệ nhiều-nhiều)
+model WorkspaceUser {
+  workspaceId String @map("workspace_id")
+  userId      String @map("user_id")
+  role        String // "owner" hoặc "member"
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Quan hệ
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([workspaceId, userId])
+  @@map("workspace_users")
+}
+
+// Bảng lưu cấu hình chi tiết của đám cưới
+model WeddingConfig {
+  id             String  @id @default(cuid())
+  workspaceId    String  @unique @map("workspace_id")
+  groomName      String? @map("groom_name")
+  brideName      String? @map("bride_name")
+  venue          String?
+  logoUrl        String? @map("logo_url")
+  mapUrl         String? @map("map_url")
+  // Lưu các ngày quan trọng dưới dạng JSON
+  importantDates Json?   @map("important_dates")
+
+  // Quan hệ
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("wedding_configs")
+}
+
+// Bảng quản lý công việc
+model Task {
+  id          String    @id @default(cuid())
+  workspaceId String    @map("workspace_id")
+  title       String
+  description String?
+  status      String    @default("todo") // "todo", "inprogress", "done", "cancelled"
+  priority    String    @default("medium") // "low", "medium", "high"
+  startDate   DateTime? @map("start_date")
+  dueDate     DateTime? @map("due_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Quan hệ
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("tasks")
+}
+
+// Bảng quản lý các danh mục ngân sách lớn
+model Budget {
+  id          String @id @default(cuid())
+  workspaceId String @map("workspace_id")
+  category    String // Tên danh mục, ví dụ: "Lễ dạm ngõ"
+  order       Int    @default(0) // Thứ tự sắp xếp
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Quan hệ: Một danh mục có nhiều khoản mục chi tiêu nhỏ
+  items     BudgetItem[]
+  workspace Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("budgets")
+}
+
+// Bảng quản lý các khoản mục chi tiêu chi tiết
+model BudgetItem {
+  id             String  @id @default(cuid())
+  budgetId       String  @map("budget_id")
+  name           String // Tên khoản mục, ví dụ: "Trang phục cô dâu"
+  expectedAmount Float   @default(0) @map("expected_amount")
+  actualAmount   Float   @default(0) @map("actual_amount")
+  note           String? // Thêm ghi chú cho khoản mục
+
+  // Thêm trường số lượng và đơn giá (tùy chọn)
+  quantity  Float?
+  unitPrice Float? @map("unit_price")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Quan hệ: Một khoản mục có thể có nhiều file đính kèm
+  attachments Media[]
+  // Quan hệ
+  budget      Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  @@map("budget_items")
+}
+
+// Bảng quản lý khách mời
+model Guest {
+  id          String  @id @default(cuid())
+  workspaceId String  @map("workspace_id")
+  name        String
+  gender      String? // "male", "female"
+  phone       String?
+  email       String?
+  side        String // "groom" (nhà trai) hoặc "bride" (nhà gái)
+  status      String  @default("pending") // "attending", "declined", "pending"
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Quan hệ
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("guests")
+}
+
+// Bảng quản lý ghi chú
+model Note {
+  id          String   @id @default(cuid())
+  workspaceId String   @map("workspace_id")
+  content     String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Quan hệ: Một ghi chú có thể có nhiều file đính kèm
+  attachments Media[]
+  // Quan hệ
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("notes")
+}
+
+// Bảng quản lý media (hình ảnh, tài liệu)
+model Media {
+  id           String   @id @default(cuid())
+  workspaceId  String   @map("workspace_id")
+  url          String // Đường dẫn tới file trên server
+  type         String // "image", "document", etc.
+  uploadedAt   DateTime @default(now()) @map("uploaded_at")
+
+  // ID tùy chọn để liên kết với các bảng khác
+  noteId       String?   @map("note_id")
+  budgetItemId String?   @map("budget_item_id")
+
+  // Quan hệ: Một file media có thể thuộc về một workspace
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  // Quan hệ: Một file media có thể được đính kèm vào một Note
+  note      Note?     @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  // Quan hệ: Một file media có thể được đính kèm vào một BudgetItem
+  budgetItem BudgetItem? @relation(fields: [budgetItemId], references: [id], onDelete: SetNull)
+
+  @@map("media")
+}

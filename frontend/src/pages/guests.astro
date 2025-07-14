@@ -1,0 +1,9 @@
+---
+// src/pages/guests.astro
+import AppLayout from '../layouts/AppLayout.astro';
+import GuestManager from '../components/GuestManager.svelte';
+---
+
+<AppLayout title="Danh Sách Khách Mời">
+    <GuestManager client:load />
+</AppLayout>
