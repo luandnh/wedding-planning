@@ -7,9 +7,10 @@ services:
     ports:
       - "15301:3001"
     environment:
-      NODE_ENV: production
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/wedding
-      JWT_SECRET: your_super_secret_jwt_key_here
+      NODE_ENV: ${NODE_ENV:-production}
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${BACKEND_PORT:-3001}
     volumes:
       # - ./backend:/app # Uncomment if you want to mount the backend source code for development
       - /app/node_modules
@@ -21,9 +22,8 @@ services:
     ports:
       - "15302:4321" # Host_port:Container_port (Astro's default preview/start port)
     environment:
-      PUBLIC_API_BASE_URL: http://backend:3001
-      API_URL: http://backend:3001
-      NODE_ENV: production
+      PUBLIC_BACKEND_URL: ${PUBLIC_BACKEND_URL:-http://backend:3001} # Use the backend service name for internal communication
+      NODE_ENV: ${NODE_ENV:-production}
     volumes:
       # - ./frontend:/app # Uncomment if you want to mount the frontend source code for development
       - /app/node_modules # Exclude node_modules for frontend
