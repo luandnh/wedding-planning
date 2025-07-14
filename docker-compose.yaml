@@ -7,7 +7,7 @@ services:
     build: ./backend # Use the same build context as your backend
     environment:
       # Pass necessary environment variables for migration
-      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}
     networks:
       - proxy
     command: ["npx", "prisma", "migrate", "deploy"]
@@ -18,7 +18,7 @@ services:
       - "15301:3001"
     environment:
       NODE_ENV: ${NODE_ENV:-production}
-      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}
       JWT_SECRET: ${JWT_SECRET}
       PORT: ${BACKEND_PORT:-3001}
     volumes:
