@@ -57,4 +57,4 @@ USER appuser
 # Start the Astro application in preview/production mode
 # Astro's `preview` script typically uses the built output.
 # If you have a custom start command for SSR, use that instead (e.g., `node ./dist/server/entry.mjs`)
-CMD ["pnpm", "run", "preview"]
+CMD ["node", "dist/server/entry.mjs"]
