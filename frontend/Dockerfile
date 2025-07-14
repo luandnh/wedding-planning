@@ -13,10 +13,6 @@ RUN pnpm install
 # Copy application source code
 COPY . .
 
-# Copy example environment file (if needed for build-time variables)
-# Astro uses import.meta.env.PUBLIC_VAR for client-side variables, and regular env vars for server-side
-RUN cp .env.example .env || true # Use || true to prevent error if .env.example doesn't exist
-
 # Build the Astro application
 # This will prepare the app for Node.js runtime
 RUN pnpm run build
@@ -39,7 +35,6 @@ ENV NODE_ENV=production
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/dist ./dist 
-COPY --from=builder /app/.env ./.env 
 
 # Set file ownership to non-root user
 RUN chown -R appuser:appgroup /app
