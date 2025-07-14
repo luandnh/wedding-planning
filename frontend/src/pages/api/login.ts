@@ -30,12 +30,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
       // Bước 2: Nhận token từ backend và thiết lập cookie an toàn
       // HttpOnly: true -> JavaScript ở client không thể đọc được cookie này
+
+      const isSecure = import.meta.env.PUBLIC_COOKIE_SECURE === "true";
       cookies.set("token", data.token, {
         path: "/",
         httpOnly: true,
-        secure: import.meta.env.PROD, // Chỉ gửi qua HTTPS ở môi trường production
-        maxAge: 60 * 60 * 24 * 7, // 7 ngày
-        sameSite: "lax",
+        secure: isSecure,
+        sameSite: isSecure ? "none" : "lax",
+        domain: import.meta.env.PUBLIC_COOKIE_DOMAIN,
+        maxAge: 60 * 60 * 24 * 7,
       });
 
       // Bước 3: Trả về thông báo thành công cho client
