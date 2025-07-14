@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 // --- Import Routes ---
 const authRoutes = require("./routes/auth");
 const workspaceRoutes = require("./routes/workspaces");
-const budgetRoutes = (require = "./routes/budgets");
+const budgetRoutes = require("./routes/budgets");
 const taskRoutes = require("./routes/tasks");
 const guestRoutes = require("./routes/guests");
 const configRoutes = require("./routes/configs");
