@@ -1,0 +1,24 @@
+---
+import CenteredLayout from "../layouts/CenteredLayout.astro";
+import WorkspaceSelector from "../components/WorkspaceSelector.svelte";
+
+const token = Astro.cookies.get("token")?.value;
+const user = Astro.locals.user;
+---
+
+<CenteredLayout title="Chọn không gian làm việc">
+  {/* Sửa lỗi: Dùng cú pháp của Astro để render có điều kiện */}
+  {
+    user && token ? (
+      <WorkspaceSelector client:load {user} {token} />
+    ) : (
+      <p class="text-center text-red-500">
+        Lỗi xác thực. Vui lòng{" "}
+        <a href="/login" class="underline">
+          đăng nhập
+        </a>{" "}
+        lại.
+      </p>
+    )
+  }
+</CenteredLayout>

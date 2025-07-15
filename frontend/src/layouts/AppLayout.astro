@@ -1,90 +1,146 @@
 ---
-import { pwaInfo } from 'virtual:pwa-info';
+import { pwaInfo } from "virtual:pwa-info";
 interface Props {
-	title: string;
+  title: string;
 }
 import "../styles/global.css";
 const { title } = Astro.props;
 // Lấy đường dẫn hiện tại để xác định mục nav nào đang active
 const currentPath = new URL(Astro.request.url).pathname;
 
+// (SỬA) Chỉ giữ lại 5 mục điều hướng chính
 const navItems = [
-    { href: "/dashboard", label: "Tổng quan", icon: `<svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>` },
-    { href: "/budget", label: "Ngân sách", icon: `<svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>` },
-    { href: "/tasks", label: "Công việc", icon: `<svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>` },
-    { href: "/guests", label: "Khách mời", icon: `<svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>` },
-    { href: "/notes", label: "Ghi chú", icon: `<svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>` },
-    { href: "/config", label: "Cấu hình", icon: `<svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>` }
+  {
+    href: "/dashboard",
+    label: "Tổng quan",
+    icon: `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>`,
+  },
+  {
+    href: "/budget",
+    label: "Ngân sách",
+    icon: `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`,
+  },
+  {
+    href: "/features", // (MỚI) Trang tính năng
+    label: "Tính năng",
+    icon: `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>`,
+  },
+  {
+    href: "/guests",
+    label: "Khách mời",
+    icon: `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>`,
+  },
+  {
+    href: "/config",
+    label: "Cấu hình",
+    icon: `<svg class="w-5 h-5 mx-auto mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.096 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>`,
+  },
 ];
 ---
+
 <html lang="vi">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ec4899">
+    <meta name="theme-color" content="#ec4899" />
     <title>{title} - Wedding Planner</title>
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/favicon/android-chrome-512x512.png">
-    <link rel="shortcut icon" href="/favicon/favicon.ico">
-    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon/favicon-32x32.png"
+    />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="/src/pwa.ts"></script>
-    { pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} /> }
-    <style> 
-        body { font-family: 'Inter', sans-serif; } 
-        .title-font { font-family: 'Dancing Script', cursive; } 
+    {pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} />}
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .title-font {
+        font-family: "Dancing Script", cursive;
+      }
     </style>
-</head>
-<body class="bg-slate-50">
+  </head>
+  <body class="bg-slate-50">
     <div class="w-full max-w-2xl mx-auto bg-slate-50 pb-20">
-        <!-- Header -->
-        <header class="bg-white p-4 pt-6 flex justify-between items-center shadow-sm sticky top-0 z-10">
-            <h1 class="text-3xl font-bold text-pink-600 title-font">{title}</h1>
-            <button id="logout-button" class="text-slate-600" title="Đăng xuất">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            </button>
-        </header>
-        
-        <!-- Page Content -->
-        <main class="p-4">
-            <slot />
-        </main>
+      <header
+        class="bg-white p-3 flex justify-between items-center shadow-sm sticky top-0 z-10"
+      >
+        <h1 class="text-2xl font-bold text-pink-600 title-font">{title}</h1>
+        <button id="logout-button" class="text-slate-600 p-1" title="Đăng xuất">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            ></path></svg
+          >
+        </button>
+      </header>
+
+      <main class="p-4">
+        <slot />
+      </main>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-t-lg z-20">
-        <div class="flex justify-around max-w-2xl mx-auto">
-            {navItems.map(item => (
-                <a 
-                    href={item.href} 
-                    class:list={[
-                        "w-full text-center pt-2 pb-1 transition-colors duration-200",
-                        currentPath.startsWith(item.href) ? "text-pink-600" : "text-slate-500 hover:text-pink-600"
-                    ]}
-                >
-                    <Fragment set:html={item.icon} />
-                    <span class="text-xs">{item.label}</span>
-                </a>
-            ))}
-        </div>
+    <nav
+      class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-t-lg z-20"
+    >
+      <div class="flex justify-around max-w-2xl mx-auto">
+        {
+          navItems.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                "w-full text-center py-1.5 transition-colors duration-200",
+                currentPath.startsWith(item.href)
+                  ? "text-pink-600"
+                  : "text-slate-500 hover:text-pink-600",
+              ]}
+            >
+              <Fragment set:html={item.icon} />
+              <span class="text-xs">{item.label}</span>
+            </a>
+          ))
+        }
+      </div>
     </nav>
 
     <script is:inline>
-        // Xử lý sự kiện đăng xuất
-        document.getElementById('logout-button').addEventListener('click', () => {
-            fetch('/logout', { method: 'POST' })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/login';
-                    } else {
-                        alert('Đăng xuất không thành công. Vui lòng thử lại.');
-                    }
-                });
-        });
+      document.getElementById("logout-button").addEventListener("click", () => {
+        fetch("/api/logout", { method: "POST" })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              window.location.href = "/login";
+            } else {
+              alert("Đăng xuất không thành công. Vui lòng thử lại.");
+            }
+          })
+          .catch((err) => {
+            console.error("Lỗi khi đăng xuất:", err);
+            alert("Đã có lỗi xảy ra. Vui lòng thử lại.");
+          });
+      });
     </script>
-</body>
+  </body>
 </html>

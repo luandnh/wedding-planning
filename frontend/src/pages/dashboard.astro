@@ -1,29 +1,16 @@
 ---
-// src/pages/dashboard.astro
 import AppLayout from '../layouts/AppLayout.astro';
 import DashboardManager from '../components/DashboardManager.svelte';
 
+// Chỉ cần lấy user và token để truyền vào component
 const token = Astro.cookies.get('token')?.value;
 const user = Astro.locals.user;
-const backendUrl = import.meta.env.PUBLIC_BACKEND_URL || 'http://localhost:3001';
-let dashboardData = null;
-
-try {
-    const workspaces = await (await fetch(`${backendUrl}/api/workspaces`, { headers: { Authorization: `Bearer ${token}` }})).json();
-    if (workspaces.length > 0) {
-        const currentWorkspaceId = workspaces[0].id;
-        dashboardData = await (await fetch(`${backendUrl}/api/workspaces/${currentWorkspaceId}/dashboard`, { headers: { Authorization: `Bearer ${token}` }})).json();
-    }
-} catch (e) {
-    console.error(e);
-}
 ---
 
 <AppLayout title="Tổng Quan">
-    {/* Sửa lỗi: Sử dụng cú pháp của Astro để render có điều kiện */}
-    {dashboardData ? (
-        <DashboardManager client:load data={dashboardData} user={user} />
+    {user && token ? (
+        <DashboardManager client:load {user} {token} />
     ) : (
-        <p class="text-center text-red-500 py-8">Không thể tải dữ liệu tổng quan.</p>
+        <p class="text-center text-red-500 py-8">Lỗi xác thực, vui lòng đăng nhập lại.</p>
     )}
 </AppLayout>
