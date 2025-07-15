@@ -1,5 +1,5 @@
 ---
-// src/layouts/AppLayout.astro
+import { pwaInfo } from 'virtual:pwa-info';
 interface Props {
 	title: string;
 }
@@ -21,6 +21,7 @@ const navItems = [
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ec4899">
     <title>{title} - Wedding Planner</title>
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
@@ -31,6 +32,8 @@ const navItems = [
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="/src/pwa.ts"></script>
+    { pwaInfo && <Fragment set:html={pwaInfo.webManifest.linkTag} /> }
     <style> 
         body { font-family: 'Inter', sans-serif; } 
         .title-font { font-family: 'Dancing Script', cursive; } 
